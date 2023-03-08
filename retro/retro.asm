@@ -478,12 +478,16 @@ endif
 ;
 ; The Z80 Retro! only has 4 disks
 ;
-; Modified for 4 disks (A,B,C & D) by Trevor Jacobs 02/16/2023
+; Modified for 4 disks (A,B,C & D) by Trevor Jacobs 03/08/2023
 ;##########################################################################
-.bios_seldsk:		;select disk given by bc - from alteration guide p26
+.bios_seldsk: ;Select disk given by c - not bc as in example in alteration guide p26.
+              ;Using bc in the math will cause errors with programs like Wordstar.
+              ;b has unknown values and will cause the ws.ovl error. This looks like 
+              ;either bad documentation on page 26 or a CP/M bug.
+	;
 	ld	a,c 
 	ld	hl,0		; HL = 0 = invalid disk
-	cp	4			; highest disk number+1 (valid disk # = 0-3)
+	cp	4		; highest disk number+1 (valid disk # = 0-3)
 	ret nc			; if disk number is not valid return error
 	;
 	ld	(bios_disk_current_disk),a	;safe to update disk number - no error
@@ -495,12 +499,12 @@ if .debug >= 2
 	ld	a,(bios_disk_current_disk)	;a gets destoyed by debug so must reload
 endif
 	;
-	ld	l,c			; low (disk)
-	ld	h,b			; high (disk)
+	ld	l,a		; Disk # from c saved in a
+	ld	h,0		; Initialize h
 	add	hl,hl		; *2
 	add	hl,hl		; *4
-	add hl,hl		; *8
-	add hl,hl		; *16
+	add 	hl,hl		; *8
+	add 	hl,hl		; *16
 	ld	de,.bios_dph	; base address of DPH table
 	add	hl,de		; address of DPH table for selected disk in hl	
 	ret
@@ -708,7 +712,7 @@ bios_disk_sector:			; last set value of of the disk sector
 ;##########################################################################
 .bios_dph:
 
-.bios_disk_0-a:
+.bios_disk_0_a:
 	dw	0		; XLT sector translation table (no xlation done)
 	dw	0		; scratchpad
 	dw	0		; scratchpad
@@ -718,7 +722,7 @@ bios_disk_sector:			; last set value of of the disk sector
 	dw	0		; CSV pointer (optional, not implemented)
 	dw	.bios_alv_a	; ALV pointer
 	
-.bios_disk_1-b:
+.bios_disk_1_b:
 	dw	0		; XLT sector translation table (no xlation done)
 	dw	0		; scratchpad
 	dw	0		; scratchpad
@@ -728,7 +732,7 @@ bios_disk_sector:			; last set value of of the disk sector
 	dw	0		; CSV pointer (optional, not implemented)
 	dw	.bios_alv_b	; ALV pointer
 	
-.bios_disk_2-c:
+.bios_disk_2_c:
 	dw	0		; XLT sector translation table (no xlation done)
 	dw	0		; scratchpad
 	dw	0		; scratchpad
@@ -738,7 +742,7 @@ bios_disk_sector:			; last set value of of the disk sector
 	dw	0		; CSV pointer (optional, not implemented)
 	dw	.bios_alv_c	; ALV pointer
 	
-.bios_disk_3-d:
+.bios_disk_3_d:
 	dw	0		; XLT sector translation table (no xlation done)
 	dw	0		; scratchpad
 	dw	0		; scratchpad
@@ -771,19 +775,12 @@ bios_disk_sector:			; last set value of of the disk sector
 
 .bios_alv_a:
 	ds	(4087/8)+1,0xaa	; scratchpad used by BDOS for disk a allocation info
-.bios_alv_a_end:
-
 .bios_alv_b:
 	ds	(4087/8)+1,0xaa	; scratchpad used by BDOS for disk b allocation info
-.bios_alv_b_end:
-
 .bios_alv_c:
 	ds	(4087/8)+1,0xaa	; scratchpad used by BDOS for disk c allocation info
-.bios_alv_c_end:
-
 .bios_alv_d:
 	ds	(4087/8)+1,0xaa	; scratchpad used by BDOS for disk d allocation info
-.bios_alv_d_end:
 
 ;##########################################################################
 ; Temporary stack used for BIOS calls needing more than a few stack levels.
