@@ -478,16 +478,16 @@ endif
 ;
 ; The Z80 Retro! only has 4 disks
 ;
-; Modified for 4 disks (A,B,C & D) by Trevor Jacobs 03/08/2023
+; Modified for 16 disks (A-P) by Trevor Jacobs 03/10/2023
 ;##########################################################################
 .bios_seldsk: ;Select disk given by c - not bc as in example in alteration guide p26.
               ;Using bc in the math will cause errors with programs like Wordstar.
               ;b has unknown values and will cause the ws.ovl error. This looks like 
-              ;either bad documentation on page 26 or a CP/M bug.
+              ;bad documentation on page 26.
 	;
 	ld	a,c 
 	ld	hl,0		; HL = 0 = invalid disk
-	cp	4		; highest disk number+1 (valid disk # = 0-3)
+	cp	16		; highest disk number+1 (valid disk # = 0-15)
 	ret nc			; if disk number is not valid return error
 	;
 	ld	(bios_disk_current_disk),a	;safe to update disk number - no error
@@ -688,27 +688,27 @@ bios_disk_sector:			; last set value of of the disk sector
 ;  65536 total sectors (max CP/M limit)
 ;  65536*128 = 8388608 gross bytes (max CP/M limit)
 ;  65536/4 = 16384 tracks
-;  2048 allocation block size BLS (Retro BIOS designer's choice)
-;  8388608/2048 = 4096 gross allocation blocks in our filesystem
+;  8192 allocation block size BLS (Retro BIOS designer's choice)
+;  8388608/8192 = 1024 gross allocation blocks in our filesystem
 ;  32 = number of reserved tracks to hold the O/S
 ;  32*512 = 16384 total reserved track bytes
-;  floor(4096-16384/2048) = 4088 total allocation blocks, absent the reserved tracks
+;  floor(1024-16384/8192) = 1022 total allocation blocks, absent the reserved tracks
 ;  512 directory entries (Retro BIOS designer's choice)
 ;  512*32 = 16384 total bytes in the directory
-;  ceiling(16384/2048) = 8 allocation blocks for the directory
+;  ceiling(16384/8192) = 2 allocation blocks for the directory
 ;
 ;                  DSM<256   DSM>255
 ;  BLS  BSH BLM    ------EXM--------
 ;  1024  3    7       0         x
-;  2048  4   15       1         0  <----------------------
+;  2048  4   15       1         0  
 ;  4096  5   31       3         1
-;  8192  6   63       7         3
+;  8192  6   63       7         3	<----------------------
 ; 16384  7  127      15         7
 ;
 ; ** NOTE: This filesystem design is inefficient because it is unlikely
 ;          that ALL of the allocation blocks will ultimately get used!
 ;
-; Modified for 4 disks (A,B,C & D) by Trevor Jacobs 02/16/2023
+; Modified for 16 disks (A-P) by Trevor Jacobs 03/10/2023
 ;##########################################################################
 .bios_dph:
 
@@ -720,8 +720,8 @@ bios_disk_sector:			; last set value of of the disk sector
 	dw	.bios_dirbuf	; DIRBUF pointer - all disks use same buffer
 	dw	.bios_dpb	; DPB pointer - all disks us same disk parameters
 	dw	0		; CSV pointer (optional, not implemented)
-	dw	.bios_alv_a	; ALV pointer
-	
+	dw	.bios_alv_0_a	; ALV pointer
+	;
 .bios_disk_1_b:
 	dw	0		; XLT sector translation table (no xlation done)
 	dw	0		; scratchpad
@@ -730,8 +730,8 @@ bios_disk_sector:			; last set value of of the disk sector
 	dw	.bios_dirbuf	; DIRBUF pointer - all disks use same buffer
 	dw	.bios_dpb	; DPB pointer - all disks us same disk parameters
 	dw	0		; CSV pointer (optional, not implemented)
-	dw	.bios_alv_b	; ALV pointer
-	
+	dw	.bios_alv_1_b	; ALV pointer
+	;
 .bios_disk_2_c:
 	dw	0		; XLT sector translation table (no xlation done)
 	dw	0		; scratchpad
@@ -740,8 +740,8 @@ bios_disk_sector:			; last set value of of the disk sector
 	dw	.bios_dirbuf	; DIRBUF pointer - all disks use same buffer
 	dw	.bios_dpb	; DPB pointer - all disks us same disk parameters
 	dw	0		; CSV pointer (optional, not implemented)
-	dw	.bios_alv_c	; ALV pointer
-	
+	dw	.bios_alv_2_c	; ALV pointer
+	;
 .bios_disk_3_d:
 	dw	0		; XLT sector translation table (no xlation done)
 	dw	0		; scratchpad
@@ -750,7 +750,127 @@ bios_disk_sector:			; last set value of of the disk sector
 	dw	.bios_dirbuf	; DIRBUF pointer - all disks use same buffer
 	dw	.bios_dpb	; DPB pointer - all disks us same disk parameters
 	dw	0		; CSV pointer (optional, not implemented)
-	dw	.bios_alv_d ; ALV pointer	
+	dw	.bios_alv_3_d 	; ALV pointer	
+	;
+.bios_disk_4_e:
+	dw	0		; XLT sector translation table (no xlation done)
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	.bios_dirbuf	; DIRBUF pointer - all disks use same buffer
+	dw	.bios_dpb	; DPB pointer - all disks us same disk parameters
+	dw	0		; CSV pointer (optional, not implemented)
+	dw	.bios_alv_4_e	; ALV pointer
+	;
+.bios_disk_5_f:
+	dw	0		; XLT sector translation table (no xlation done)
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	.bios_dirbuf	; DIRBUF pointer - all disks use same buffer
+	dw	.bios_dpb	; DPB pointer - all disks us same disk parameters
+	dw	0		; CSV pointer (optional, not implemented)
+	dw	.bios_alv_5_f	; ALV pointer
+	;
+.bios_disk_6_g:
+	dw	0		; XLT sector translation table (no xlation done)
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	.bios_dirbuf	; DIRBUF pointer - all disks use same buffer
+	dw	.bios_dpb	; DPB pointer - all disks us same disk parameters
+	dw	0		; CSV pointer (optional, not implemented)
+	dw	.bios_alv_6_g	; ALV pointer
+	;
+.bios_disk_7_h:
+	dw	0		; XLT sector translation table (no xlation done)
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	.bios_dirbuf	; DIRBUF pointer - all disks use same buffer
+	dw	.bios_dpb	; DPB pointer - all disks us same disk parameters
+	dw	0		; CSV pointer (optional, not implemented)
+	dw	.bios_alv_7_h   ; ALV pointer	
+	;
+.bios_disk_8_i:
+	dw	0		; XLT sector translation table (no xlation done)
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	.bios_dirbuf	; DIRBUF pointer - all disks use same buffer
+	dw	.bios_dpb	; DPB pointer - all disks us same disk parameters
+	dw	0		; CSV pointer (optional, not implemented)
+	dw	.bios_alv_8_i	; ALV pointer
+	;
+.bios_disk_9_j:
+	dw	0		; XLT sector translation table (no xlation done)
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	.bios_dirbuf	; DIRBUF pointer - all disks use same buffer
+	dw	.bios_dpb	; DPB pointer - all disks us same disk parameters
+	dw	0		; CSV pointer (optional, not implemented)
+	dw	.bios_alv_9_j	; ALV pointer
+	;
+.bios_disk_10_k:
+	dw	0		; XLT sector translation table (no xlation done)
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	.bios_dirbuf	; DIRBUF pointer - all disks use same buffer
+	dw	.bios_dpb	; DPB pointer - all disks us same disk parameters
+	dw	0		; CSV pointer (optional, not implemented)
+	dw	.bios_alv_10_k	; ALV pointer
+	;
+.bios_disk_11_l:
+	dw	0		; XLT sector translation table (no xlation done)
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	.bios_dirbuf	; DIRBUF pointer - all disks use same buffer
+	dw	.bios_dpb	; DPB pointer - all disks us same disk parameters
+	dw	0		; CSV pointer (optional, not implemented)
+	dw	.bios_alv_11_l  ; ALV pointer	
+	;
+.bios_disk_12_m:
+	dw	0		; XLT sector translation table (no xlation done)
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	.bios_dirbuf	; DIRBUF pointer - all disks use same buffer
+	dw	.bios_dpb	; DPB pointer - all disks us same disk parameters
+	dw	0		; CSV pointer (optional, not implemented)
+	dw	.bios_alv_12_m	; ALV pointer
+	;
+.bios_disk_13_n:
+	dw	0		; XLT sector translation table (no xlation done)
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	.bios_dirbuf	; DIRBUF pointer - all disks use same buffer
+	dw	.bios_dpb	; DPB pointer - all disks us same disk parameters
+	dw	0		; CSV pointer (optional, not implemented)
+	dw	.bios_alv_13_n	; ALV pointer
+	;
+.bios_disk_14_o:
+	dw	0		; XLT sector translation table (no xlation done)
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	.bios_dirbuf	; DIRBUF pointer - all disks use same buffer
+	dw	.bios_dpb	; DPB pointer - all disks us same disk parameters
+	dw	0		; CSV pointer (optional, not implemented)
+	dw	.bios_alv_14_o	; ALV pointer
+	;
+.bios_disk_15_p:
+	dw	0		; XLT sector translation table (no xlation done)
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	0		; scratchpad
+	dw	.bios_dirbuf	; DIRBUF pointer - all disks use same buffer
+	dw	.bios_dpb	; DPB pointer - all disks us same disk parameters
+	dw	0		; CSV pointer (optional, not implemented)
+	dw	.bios_alv_15_p  ; ALV pointer		
 
 	
 .bios_dirbuf:
@@ -759,28 +879,64 @@ bios_disk_sector:			; last set value of of the disk sector
 
 .bios_dpb:
 	dw	4		; SPT
-	db	4		; BSH
-	db	15		; BLM
-	db	0		; EXM
-	dw	4087	; DSM (max allocation block number)
+	db	6		; BSH
+	db	63		; BLM
+	db	3		; EXM
+	dw	1021		; DSM (max allocation block number)
 	dw	511		; DRM
-	db	0xff	; AL0
-	db	0x00	; AL1
+	db	0xC0		; AL0
+	db	0x00		; AL1
 	dw	0		; CKS
 	dw	32		; OFF
 		
-;Why not just make the alv defined segments 512 bytes - a block?
-;instead of 511.875 bytes - (4087/8)+1
-;ALV takes up a lot of RAM when you have 16 disks 8K!!!	
-
-.bios_alv_a:
-	ds	(4087/8)+1,0xaa	; scratchpad used by BDOS for disk a allocation info
-.bios_alv_b:
-	ds	(4087/8)+1,0xaa	; scratchpad used by BDOS for disk b allocation info
-.bios_alv_c:
-	ds	(4087/8)+1,0xaa	; scratchpad used by BDOS for disk c allocation info
-.bios_alv_d:
-	ds	(4087/8)+1,0xaa	; scratchpad used by BDOS for disk d allocation info
+.bios_alv_0_a:
+	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk a allocation info
+	;
+.bios_alv_1_b:
+	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk b allocation info
+	;
+.bios_alv_2_c:
+	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk c allocation info
+	;
+.bios_alv_3_d:
+	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk d allocation info
+	;
+.bios_alv_4_e:
+	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk e allocation info
+	;
+.bios_alv_5_f:
+	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk f allocation info
+	;
+.bios_alv_6_g:
+	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk g allocation info
+	;
+.bios_alv_7_h:
+	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk h allocation info
+	;
+.bios_alv_8_i:
+	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk i allocation info
+	;
+.bios_alv_9_j:
+	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk j allocation info
+	;
+.bios_alv_10_k:
+	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk k allocation info
+	;
+.bios_alv_11_l:
+	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk l allocation info
+	;
+.bios_alv_12_m:
+	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk m allocation info
+	;
+.bios_alv_13_n:
+	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk n allocation info
+	;
+.bios_alv_14_o:
+	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk o allocation info
+	;
+.bios_alv_15_p:
+	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk p allocation info
+	;		
 
 ;##########################################################################
 ; Temporary stack used for BIOS calls needing more than a few stack levels.
