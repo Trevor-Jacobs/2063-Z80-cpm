@@ -884,7 +884,7 @@ bios_disk_sector:			; last set value of of the disk sector
 	db	3		; EXM
 	dw	1022		; DSM (max allocation block number)
 	dw	511		; DRM
-	db	0xC0		; AL0
+	db	0xc0		; AL0
 	db	0x00		; AL1
 	dw	0		; CKS
 	dw	32		; OFF
