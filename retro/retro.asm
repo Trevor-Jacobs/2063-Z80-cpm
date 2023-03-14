@@ -692,7 +692,7 @@ bios_disk_sector:			; last set value of of the disk sector
 ;  8388608/8192 = 1024 gross allocation blocks in our filesystem
 ;  32 = number of reserved tracks to hold the O/S
 ;  32*512 = 16384 total reserved track bytes
-;  floor(1024-16384/8192) = 1022 total allocation blocks, absent the reserved tracks
+;  floor(1024-16384/8192) = 1022 maximum available allocation blocks, absent the reserved tracks
 ;  512 directory entries (Retro BIOS designer's choice)
 ;  512*32 = 16384 total bytes in the directory
 ;  ceiling(16384/8192) = 2 allocation blocks for the directory
@@ -882,7 +882,7 @@ bios_disk_sector:			; last set value of of the disk sector
 	db	6		; BSH
 	db	63		; BLM
 	db	3		; EXM
-	dw	1022		; DSM (max allocation block number)
+	dw	1021		; DSM = maximum available allocation blocks - 1 (pg. 27 AG)
 	dw	511		; DRM
 	db	0xc0		; AL0
 	db	0x00		; AL1
@@ -890,52 +890,52 @@ bios_disk_sector:			; last set value of of the disk sector
 	dw	32		; OFF
 		
 .bios_alv_0_a:
-	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk a allocation info
+	ds	(1021/8)+1,0xaa	; scratchpad used by BDOS for disk a allocation info
 	;
 .bios_alv_1_b:
-	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk b allocation info
+	ds	(1021/8)+1,0xaa	; scratchpad used by BDOS for disk b allocation info
 	;
 .bios_alv_2_c:
-	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk c allocation info
+	ds	(1021/8)+1,0xaa	; scratchpad used by BDOS for disk c allocation info
 	;
 .bios_alv_3_d:
-	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk d allocation info
+	ds	(1021/8)+1,0xaa	; scratchpad used by BDOS for disk d allocation info
 	;
 .bios_alv_4_e:
-	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk e allocation info
+	ds	(1021/8)+1,0xaa	; scratchpad used by BDOS for disk e allocation info
 	;
 .bios_alv_5_f:
-	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk f allocation info
+	ds	(1021/8)+1,0xaa	; scratchpad used by BDOS for disk f allocation info
 	;
 .bios_alv_6_g:
-	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk g allocation info
+	ds	(1021/8)+1,0xaa	; scratchpad used by BDOS for disk g allocation info
 	;
 .bios_alv_7_h:
-	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk h allocation info
+	ds	(1021/8)+1,0xaa	; scratchpad used by BDOS for disk h allocation info
 	;
 .bios_alv_8_i:
-	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk i allocation info
+	ds	(1021/8)+1,0xaa	; scratchpad used by BDOS for disk i allocation info
 	;
 .bios_alv_9_j:
-	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk j allocation info
+	ds	(1021/8)+1,0xaa	; scratchpad used by BDOS for disk j allocation info
 	;
 .bios_alv_10_k:
-	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk k allocation info
+	ds	(1021/8)+1,0xaa	; scratchpad used by BDOS for disk k allocation info
 	;
 .bios_alv_11_l:
-	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk l allocation info
+	ds	(1021/8)+1,0xaa	; scratchpad used by BDOS for disk l allocation info
 	;
 .bios_alv_12_m:
-	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk m allocation info
+	ds	(1021/8)+1,0xaa	; scratchpad used by BDOS for disk m allocation info
 	;
 .bios_alv_13_n:
-	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk n allocation info
+	ds	(1021/8)+1,0xaa	; scratchpad used by BDOS for disk n allocation info
 	;
 .bios_alv_14_o:
-	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk o allocation info
+	ds	(1021/8)+1,0xaa	; scratchpad used by BDOS for disk o allocation info
 	;
 .bios_alv_15_p:
-	ds	(1022/8)+1,0xaa	; scratchpad used by BDOS for disk p allocation info
+	ds	(1021/8)+1,0xaa	; scratchpad used by BDOS for disk p allocation info
 	;		
 
 ;##########################################################################
