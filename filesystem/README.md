@@ -18,6 +18,10 @@ Once a filesystem has been initialized by the mkfs.cpm command, files can be add
 
 	cpmcp -f z80-retro-8k-8m retro.img ../cpm22/filesystem/* 0:
 
+You can copy files from a disk image back to a folder on your drive like this:
+
+	cpmcp -f z80-retro-8k-8m retro.img 0:* ../cpm22/filesysytem
+
 We can also look at what files are on the CP/M filesystem with the `cpmls` command like this:
 
 	cpmls -f z80-retro-8k-8m retro.img
