@@ -1,11 +1,11 @@
-1. Use lsblk to find your MicroSD card name. Mine is mmcblk0 because I use a MicroSD card adapter in an SD card slot on my laptop.
-It could also be sdb, sdc etc if you use a USB adapter. BE CERTAIN YOU HAVE THE CORRECT DEVICE TO AVOID DESTROYING DATA! You can run lsblk before you insert your MicroSD card and then run it again after you have inserted your MicroSD card and see what the new device is. That is your MicroSD card.
+1. Use lsblk to find your Micro SD card name. Mine is mmcblk0 because I use a Micro SD card adapter in an SD card slot on my laptop.
+It could also be sdb, sdc etc if you use a USB adapter. BE CERTAIN YOU HAVE THE CORRECT DEVICE TO AVOID DESTROYING DATA! You can run lsblk before you insert your Micro SD card and then run it again after you have inserted your Micro SD card and see what the new device is. That is your Micro SD card.
 
-2. Clear the MicroSD card before making a partition:
+2. Clear the Micro SD card before making a partition:
 
 sudo dd if=/dev/zero of=/dev/mmcblk0 bs=512 conv=fsync count=264192 status=progress
 
-3. Make a partion on the MicroSD card with parted:
+3. Make a partion on the Micro SD card with parted:
 
 sudo parted /dev/mmcblk0
 GNU Parted 3.4
@@ -44,7 +44,7 @@ slot 3, you could just write the new image to slot 3. It won't effect the other 
 slot 0 must contain the BIOS (retro.bin) or it won't boot. See John's note on CP/M Tools and creating
 disk images here: https://github.com/Z80-Retro/2063-Z80-cpm/blob/main/filesystem/README.md
 
-If you want to copy a disk image from a slot on your SD Card partition back to your PC, here is the command:
+If you want to copy a disk image from a slot on your Micro SD Card partition back to your PC, here is the command:
 
 Slot 0: sudo if=/dev/mmcblk0p1 of=0.img bs=512 skip=00x16384 count=16384 conv=fsync status=progress
 Slot 1: sudo if=/dev/mmcblk0p1 of=1.img bs=512 skip=01x16384 count=16384 conv=fsync status=progress
@@ -54,3 +54,9 @@ Slot 3: sudo if=/dev/mmcblk0p1 of=3.img bs=512 skip=03x16384 count=16384 conv=fs
 .
 .
 Slot 15: sudo if=/dev/mmcblk0p1 of=15.img bs=512 skip=15x16384 count=16384 conv=fsync status=progress
+
+If you want to back up your entire Micro SD card (129MiB - not just the partition), here is the command:
+sudo dd if=/dev/mmcblk0 of=backup.img bs=512 conv=fsync count=264192 status=progress
+
+To burn the backup to a new Micro SD card:
+sudo dd if=backup.img of=/dev/mmcblk0 bs=512 conv=fsync status=progress
