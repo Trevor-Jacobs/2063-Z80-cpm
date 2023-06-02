@@ -37,11 +37,6 @@
 .sd_partition_base: equ	0x800
 
 ;##########################################################################
-;512 byte blocks to offset per disk slot - Trevor Jacobs 02-15-2023 
-;##########################################################################
-.sd_disk_offset:	equ 0x40	;8MiB disk slot - High Byte - 0x4000
-
-;##########################################################################
 ;
 ; CP/M 2.2 Alteration Guide p19:
 ; Assuming the drive has been selected, the track has been set, the sector
@@ -395,33 +390,25 @@ rw_init:
 ;##########################################################################
 ;Modification for multiple disks - Trevor Jacobs - 02-15-2023
 ;add 0x4000 to de,hl disk number of times - 0x4000 offset per disk
+;Refactored for efficiency - Trevor Jacobs - 06-02-2023
 ;##########################################################################
 .bios_disk_offset:
 	;
-	ld	a,(bios_disk_current_disk)	;current disk number
-	ld	b,a						;b is our add counter containing current disk #
-	inc	b
+	ld	a,(bios_disk_current_disk)	;13 current disk number (0-15)
+	ld	e,a				;4
+	xor	a				;4  clear a
+	srl	e				;8
+	rra 					;4	
+	srl	e				;8  e offset in e
+	rra 					;4  h offset in a
 	;
-.bios_disk_offset_loop:	
+	add	a,h				;4  h block number now in a
+	ld      h,a				;4  h now has correct block number
 	;
-	dec	b
-	jp	z,.bios_exit_disk_offset
+	ld	a,e				;4  e offset
+	adc     a,0				;7  add the carry from the previous add to e
+	ld      e,a				;4  e now has correct block number
 	;
-	or	a						;clear carry flag
-	ld	a,.sd_disk_offset
-	add	a,h
-	ld	h,a
-	;
-	ld	a,e
-	adc	a,0
-	ld	e,a
-	;
-	jp	.bios_disk_offset_loop
-	;
-	;
-.bios_exit_disk_offset:	
-	;
-	ret
-	;
-	;
+	ret					;10 - 78 total cycles
+
 ;##########################################################################	        
