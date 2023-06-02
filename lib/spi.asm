@@ -124,14 +124,14 @@ spi_read8:
 	or	gpio_out_sd_clk		; Set CLK bit 7
 	ld l, a				; Store for fast use 4
 	
-	spi_read1	;7		; Read the 8 bits 51
-	spi_read1	;6
-	spi_read1	;5
-	spi_read1	;4
-	spi_read1	;3
-	spi_read1	;2
-	spi_read1	;1
-	spi_read1	;0
+	spi_read1 ;7		        ; Read the 8 bits 51
+	spi_read1 ;6
+	spi_read1 ;5
+	spi_read1 ;4
+	spi_read1 ;3
+	spi_read1 ;2
+	spi_read1 ;1
+	spi_read1 ;0
 
 	;ei				; End of critical section
 	
