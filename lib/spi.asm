@@ -101,7 +101,7 @@ spi_read1: macro
 	out	(c), h			; Drive MOSI high and CLK low.  Do it fast by using register 12
 	out	(c), l			; Drive MOSI HIGH and CLK high 12
 	in	a, (gpio_in)		; Read MISO (in bit 7) 11
-	rl a				; Put MISO value in carry 8
+	rla					; Put MISO value in carry 8
 	rl e				; Shift carry (= MISO bit) into bit 0 of reg e 8
 	endm
 ;T: 51 clocks/bit = 5.1us/byte (~25% improvement)
