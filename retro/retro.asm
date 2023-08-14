@@ -315,17 +315,29 @@ if .debug >= 3
 	call	hexdump
 endif
 
-if 0
+;if 0
 	; This is not quite right because it include the user number and
 	; can get us stuck re-selesting an invalid disk drive!
-	ld	a,(4)		; load the current disk # from page-zero into a/c
-	and	0x0f		; the drive number is in the 4 lsbs
+	;ld	a,(4)		; load the current disk # from page-zero into a/c
+	;and	0x0f		; the disk number is in the 4 lsbs
+	;ld	c,a
+;else
+	;ld	c,0		; The ONLY valid disk WE have is A!
+;endif
+	;jp	CPM_BASE	; start the CCP
+if 1
+	ld	c,0		; default = disk A (if previous was invalid)
+	ld	a,(4)           ; load the current disk # from page-zero into A
+	and	0x0f            ; the disk number is in the 4 lsbs
+	cp	0x10			; highest valid disk number +1 (15 +1 for 16 disks)
+	jp	nc,CPM_BASE     ; if A >= dph_vec_num then bad disk (use 0)
+
+	ld	a,(4)           ; load the current disk # from page-zero into a/c
 	ld	c,a
 else
-	ld	c,0		; The ONLY valid drive WE have is A!
+	ld	c,0		; The ONLY valid disk WE have is A!
 endif
-	jp	CPM_BASE	; start the CCP
-
+	jp	CPM_BASE	; start the CCP	
 
 ;##########################################################################
 ;
